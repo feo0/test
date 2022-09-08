@@ -11,4 +11,55 @@ from random import randint
 from IPython.core.display import display, HTML
 display(HTML("<style>.container { width:100% !important; }</style>"))
 %matplotlib inline
-
+ds = pd.read_excel("Тестовое задание.xlsx", dtype = str)
+ds
+ds["color"] = 0
+ds = ds.drop(columns="good (1)")
+# создадим палитру цветов
+import matplotlib.colors as colors
+colors_list = list(colors._colors_full_map.values())
+print(len(colors_list))
+# рандомный выбор цвета из палитры
+color = []
+for i in range(30):
+    c = (random.choice(colors_list))
+    if c in color:
+        print("Повтор")
+    else:
+        color += [c]
+ ds[ds["area"].isna()]
+ ds = ds.drop(index=193)
+ # удаляем дубликаты в колонке keyword с фильтром по area
+index = []
+for i in ds["area"].unique():
+    a = ds[ds["area"] == str(i)]
+    a = a.drop_duplicates(subset=['keyword'], keep="last")
+    index += list(a.index)
+ds = ds.loc[index]
+ for i in ds["area"].unique():
+    a = ds[ds["area"] == str(i)]
+    # выбираем цвета по количеству кластеров без повторений
+    color_keyword = random.sample(color, len(a["cluster_name"].unique()))
+    cluster_name = a["cluster_name"].unique()
+    for cluster in cluster_name:
+        filter_cluster = a[a["cluster_name"] == str(cluster)]
+        index_color = list(cluster_name).index(cluster)
+        filter_cluster["color"] = color_keyword[index_color]
+        ds.loc[filter_cluster["color"].index, "color"] =  filter_cluster["color"]
+ ds = ds.sort_values(by=["area", "cluster", "cluster_name"])
+ ds_sorted = pd.DataFrame(columns=ds.columns)
+for i in ds["area"].unique():
+    a = ds[ds["area"] == str(i)]
+    cluster_name = a["cluster_name"].unique()
+    for cluster in cluster_name:
+        sort_ds = a[a.cluster_name == cluster]
+        sort_ds = sort_ds.sort_values(by=["count"], ascending = True)
+        ds_sorted = pd.concat([ds_sorted, sort_ds])
+ ds_sorted.isna().sum()
+print(ds_sorted[ds_sorted["y"] == '0x414fe002'])
+ds_sorted = ds_sorted.drop(index=99)
+ds_sorted[["x", "y"]] = ds_sorted[["x", "y"]].astype("float")
+print(ds_sorted)
+ 
+ 
+ 
